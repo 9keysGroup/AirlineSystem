@@ -21,7 +21,7 @@ public class AirlineWebServer {
 
     public AirlineWebServer(int port) throws IOException {
         this.airlineSystem = new AirlineSystem();
-        this.server = HttpServer.create(new InetSocketAddress(port), 0);
+        this.server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
         this.server.setExecutor(Executors.newCachedThreadPool());
         registerRoutes();
     }
