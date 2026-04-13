@@ -304,6 +304,7 @@ public class AirlineWebServer {
         public void handle(HttpExchange exchange) throws IOException {
             byte[] body = content.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", contentType);
+            exchange.getResponseHeaders().set("Cache-Control", "no-store");
             exchange.sendResponseHeaders(200, body.length);
             OutputStream output = exchange.getResponseBody();
             output.write(body);
