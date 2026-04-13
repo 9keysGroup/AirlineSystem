@@ -28,11 +28,12 @@ public class AirlineWebServer {
 
     public void start() {
         server.start();
-        System.out.println("Airline web UI running at http://localhost:" + server.getAddress().getPort());
+        System.out.println("Airline web UI running on port " + server.getAddress().getPort());
     }
 
     private void registerRoutes() {
         server.createContext("/", new TextHandler("text/html; charset=utf-8", pageHtml()));
+        server.createContext("/health", new TextHandler("text/plain; charset=utf-8", "OK"));
         server.createContext("/app.css", new TextHandler("text/css; charset=utf-8", pageCss()));
         server.createContext("/app.js", new TextHandler("application/javascript; charset=utf-8", pageJs()));
         server.createContext("/api/cities", new ApiHandler() {
