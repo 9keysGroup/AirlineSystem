@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class AirlineWebServer {
+    private static final String ASSET_VERSION = "20260413b";
     private final AirlineSystem airlineSystem;
     private final HttpServer server;
 
@@ -279,6 +280,8 @@ public class AirlineWebServer {
             Headers headers = exchange.getResponseHeaders();
             headers.set("Content-Type", "application/json; charset=utf-8");
             headers.set("Cache-Control", "no-store");
+            headers.set("Pragma", "no-cache");
+            headers.set("Expires", "0");
 
             String response = handleRequest(exchange);
             byte[] body = response.getBytes(StandardCharsets.UTF_8);
@@ -305,6 +308,8 @@ public class AirlineWebServer {
             byte[] body = content.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", contentType);
             exchange.getResponseHeaders().set("Cache-Control", "no-store");
+            exchange.getResponseHeaders().set("Pragma", "no-cache");
+            exchange.getResponseHeaders().set("Expires", "0");
             exchange.sendResponseHeaders(200, body.length);
             OutputStream output = exchange.getResponseBody();
             output.write(body);
@@ -319,7 +324,7 @@ public class AirlineWebServer {
                 + "  <meta charset=\"UTF-8\">\n"
                 + "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
                 + "  <title>Airline Reservation System</title>\n"
-                + "  <link rel=\"stylesheet\" href=\"/app.css\">\n"
+                + "  <link rel=\"stylesheet\" href=\"/app.css?v=" + ASSET_VERSION + "\">\n"
                 + "</head>\n"
                 + "<body>\n"
                 + "  <div class=\"page-shell\">\n"
@@ -392,7 +397,7 @@ public class AirlineWebServer {
                 + "      </section>\n"
                 + "    </main>\n"
                 + "  </div>\n"
-                + "  <script src=\"/app.js\"></script>\n"
+                + "  <script src=\"/app.js?v=" + ASSET_VERSION + "\"></script>\n"
                 + "</body>\n"
                 + "</html>\n";
     }
