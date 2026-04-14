@@ -120,25 +120,44 @@ public class AirlineSystem {
         FlightGraph graph = new FlightGraph();
 
         graph.addRoute("Toronto", "Montreal", 220, 95);
+        graph.addRoute("Toronto", "Montreal", 145, 125);
         graph.addRoute("Toronto", "Vancouver", 480, 295);
+        graph.addRoute("Toronto", "Vancouver", 340, 355);
         graph.addRoute("Toronto", "Chicago", 310, 100);
+        graph.addRoute("Toronto", "Chicago", 180, 150);
         graph.addRoute("Toronto", "New York", 180, 75);
+        graph.addRoute("Toronto", "New York", 120, 105);
         graph.addRoute("Montreal", "New York", 150, 80);
         graph.addRoute("Montreal", "Paris", 750, 420);
+        graph.addRoute("Montreal", "Paris", 540, 505);
         graph.addRoute("New York", "London", 680, 415);
+        graph.addRoute("New York", "London", 260, 510);
         graph.addRoute("New York", "Miami", 290, 180);
+        graph.addRoute("New York", "Miami", 180, 240);
         graph.addRoute("Chicago", "Los Angeles", 390, 250);
+        graph.addRoute("Chicago", "Los Angeles", 240, 325);
         graph.addRoute("Chicago", "Dallas", 270, 150);
+        graph.addRoute("Chicago", "Dallas", 170, 215);
         graph.addRoute("Vancouver", "Los Angeles", 210, 150);
+        graph.addRoute("Vancouver", "Los Angeles", 140, 210);
         graph.addRoute("Los Angeles", "Tokyo", 1100, 620);
+        graph.addRoute("Los Angeles", "Tokyo", 760, 760);
         graph.addRoute("Los Angeles", "Sydney", 1400, 850);
+        graph.addRoute("Los Angeles", "Sydney", 980, 980);
         graph.addRoute("London", "Paris", 160, 75);
+        graph.addRoute("London", "Paris", 70, 105);
         graph.addRoute("London", "Dubai", 650, 390);
+        graph.addRoute("London", "Dubai", 330, 500);
         graph.addRoute("Dubai", "Tokyo", 700, 420);
+        graph.addRoute("Dubai", "Tokyo", 310, 535);
         graph.addRoute("Tokyo", "Sydney", 800, 480);
+        graph.addRoute("Tokyo", "Sydney", 340, 610);
         graph.addRoute("Paris", "Dubai", 550, 380);
+        graph.addRoute("Paris", "Dubai", 210, 470);
         graph.addRoute("Miami", "Bogota", 420, 280);
+        graph.addRoute("Miami", "Bogota", 250, 360);
         graph.addRoute("Dallas", "Miami", 240, 160);
+        graph.addRoute("Dallas", "Miami", 150, 225);
 
         return graph;
     }
@@ -151,14 +170,17 @@ public class AirlineSystem {
         Map<String, Integer> dist = new HashMap<String, Integer>();
         Map<String, String> prev = new HashMap<String, String>();
         Map<String, Integer> otherDim = new HashMap<String, Integer>();
+        Map<String, Integer> hops = new HashMap<String, Integer>();
 
         for (String city : graph.getCities()) {
             dist.put(city, Integer.MAX_VALUE);
             otherDim.put(city, Integer.MAX_VALUE);
+            hops.put(city, Integer.MAX_VALUE);
         }
 
         dist.put(source, 0);
         otherDim.put(source, 0);
+        hops.put(source, 0);
 
         PriorityQueue<DijkstraNode> queue = new PriorityQueue<DijkstraNode>();
         queue.offer(new DijkstraNode(source, 0));
@@ -173,10 +195,17 @@ public class AirlineSystem {
                 int weight = byCost ? flight.cost : flight.duration;
                 int secondaryWeight = byCost ? flight.duration : flight.cost;
                 int candidate = dist.get(current.city) + weight;
+                int candidateOther = otherDim.get(current.city) + secondaryWeight;
+                int candidateHops = hops.get(current.city) + 1;
 
-                if (candidate < dist.get(flight.destination)) {
+                if ((candidate < dist.get(flight.destination))
+                        || (candidate == dist.get(flight.destination) && candidateOther < otherDim.get(flight.destination))
+                        || (candidate == dist.get(flight.destination)
+                        && candidateOther == otherDim.get(flight.destination)
+                        && candidateHops < hops.get(flight.destination))) {
                     dist.put(flight.destination, candidate);
-                    otherDim.put(flight.destination, otherDim.get(current.city) + secondaryWeight);
+                    otherDim.put(flight.destination, candidateOther);
+                    hops.put(flight.destination, candidateHops);
                     prev.put(flight.destination, current.city);
                     queue.offer(new DijkstraNode(flight.destination, candidate));
                 }
