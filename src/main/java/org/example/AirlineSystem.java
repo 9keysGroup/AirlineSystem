@@ -77,9 +77,17 @@ public class AirlineSystem {
                 }
             }
 
+            int samples = Math.min(Math.max(25, n / 4), 120);
             long start = System.nanoTime();
-            dijkstra(graph, cities[0], cities[n - 1], true);
-            long elapsedMs = (System.nanoTime() - start) / 1_000_000;
+            for (int sample = 0; sample < samples; sample++) {
+                String from = cities[sample % cities.length];
+                String to = cities[(sample * 7 + 11) % cities.length];
+                if (from.equals(to)) {
+                    to = cities[(sample * 13 + 17) % cities.length];
+                }
+                dijkstra(graph, from, to, sample % 2 == 0);
+            }
+            long elapsedMs = Math.max(1L, (System.nanoTime() - start) / 1_000_000);
             results.add(new BenchmarkResult(n, edgeCount, elapsedMs));
         }
 
